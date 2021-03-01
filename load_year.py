@@ -41,6 +41,7 @@ for variable in variables:
               '21:00', '22:00', '23:00'
           ],
           'format': 'netcdf',
+          # north, west, south, east
           'area': [
               71.5, -10.5, 33.5, 35,
           ],
