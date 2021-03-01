@@ -2,7 +2,7 @@
   "finland": {
     "variables": ["2m_temperature", "surface_net_solar_radiation"],
     "area": [71.5, -10.5, 33.5, 35],
-    "start": 1979,
+    "start": 2000,
     "path": "/home/solant/leanheat/src/climatology/data/"
   }
 }
