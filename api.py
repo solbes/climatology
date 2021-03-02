@@ -54,7 +54,7 @@ def home():
     res = requests.get(req)
 
     ds = pd.DataFrame(json.loads(res.content))
-    ds = ds.set_index(pd.to_datetime(ds.time)).drop(columns='time')
+    ds = ds.set_index(pd.to_datetime(ds.time)).drop(columns='time')-273.15
 
     plt.figure()
     plt.scatter(ds.index.hour, ds.temperature, c=ds.index.year, s=10)
