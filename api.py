@@ -2,6 +2,7 @@ import flask
 from flask import request, jsonify
 import logging
 import pandas as pd
+import numpy as np
 import xarray as xr
 import requests
 import json
@@ -21,7 +22,8 @@ ds_disks = {key: {} for key in cfg_all.keys()}
 for region in cfg_all.keys():
     cfg = cfg_all[region]
     for var in cfg['variables']:
-        path = os.path.join(cfg['path'], var + '*.nc')
+        path = os.path.join(cfg['path'], region, var + '*.nc')
+        print(path)
         ds_disks[region][var] = xr.open_mfdataset(path)
 
 
@@ -30,7 +32,7 @@ def in_area(lat, lon, area):
            (lon < area[3])
 
 
-def region_from_latlon(lat, lon, confs):
+def region_from_coords(lat, lon, confs):
     areas = {reg: config['area'] for reg, config in confs.items()}
     ok_areas = dict(filter(
         lambda items: in_area(lat, lon, items[1]),
@@ -45,7 +47,8 @@ def home():
     mon = pd.Timestamp.now().month
     day = pd.Timestamp.now().day
 
-    req = 'http://127.0.0.1:5000/api/by_day/temperature?lat=61.75&lon=22.5' \
+    req = 'http://127.0.0.1:5000/api/by_day?variable' \
+          '=2m_temperature&lat=61.75&lon=22.5' \
           '&month={0}&day={1}&start=2016'.format(mon, day)
 
     res = requests.get(req)
@@ -71,10 +74,10 @@ def api_by_range():
 
     lat = float(request.args['lat'])
     lon = float(request.args['lon'])
-    variable = float(request.args['variable'])
+    variable = request.args['variable']
 
     # figure out the region to use
-    ok_region = region_from_latlon(lat, lon, cfg_all)
+    ok_region = region_from_coords(lat, lon, cfg_all)
     if not ok_region:
         return "No suitable area found with given lat-lon."
 
@@ -87,10 +90,20 @@ def api_by_range():
         time=slice(start, end),
         longitude=lon,
         latitude=lat
-    ).to_dataframe().drop(columns=['latitude', 'longitude'])-273.15
+    )
+
+    # in some files you get a nasty extra dimension 'expver' in addition to
+    # time, see some discussion here:
+    # https://confluence.ecmwf.int/pages/viewpage.action?pageId=173385064
+    # this is a workaround to drop the extra dimension
+    if 'expver' in list(temp_series.indexes.keys()):
+        temp_series = temp_series.reduce(np.nansum, 'expver')
+
+    # drop lat and lon --> you have a dataframe with just one variable
+    temp_series = temp_series.to_dataframe().drop(columns=['latitude', 'longitude'])
 
     out = {'time': list(temp_series.index.astype(str)),
-           'temperature': list(temp_series.values[:, 0])}
+           'temperature': list(temp_series.values[:, 0].astype(float))}
 
     return jsonify(out)
 
@@ -104,10 +117,10 @@ def api_temperature_day():
     lon = float(request.args['lon'])
     mon = int(request.args['month'])
     day = int(request.args['day'])
-    variable = float(request.args['variable'])
+    variable = request.args['variable']
 
     # figure out the region to use
-    ok_region = region_from_latlon(lat, lon, cfg_all)
+    ok_region = region_from_coords(lat, lon, cfg_all)
     if not ok_region:
         return "No suitable area found with given lat-lon."
 
@@ -125,10 +138,20 @@ def api_temperature_day():
 
     temp_series = ds_disk.sel(
         time=(ii_mon & ii_day & ii_year), longitude=lon, latitude=lat,
-    ).to_dataframe().drop(columns=['latitude', 'longitude'])-273.15
+    )
+
+    # in some files you get a nasty extra dimension 'expver' in addition to
+    # time, see some discussion here:
+    # https://confluence.ecmwf.int/pages/viewpage.action?pageId=173385064
+    # this is a workaround to drop the extra dimension
+    if 'expver' in list(temp_series.indexes.keys()):
+        temp_series = temp_series.reduce(np.nansum, 'expver')
+
+    temp_series = temp_series.to_dataframe().drop(
+        columns=['latitude', 'longitude'])
 
     out = {'time': list(temp_series.index.astype(str)),
-           'temperature': list(temp_series.values[:, 0])}
+           'temperature': list(temp_series.values[:, 0].astype(float))}
 
     return jsonify(out)
 
