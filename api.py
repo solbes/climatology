@@ -41,6 +41,10 @@ def region_from_coords(lat, lon, confs):
     return list(ok_areas.keys())[0]
 
 
+def round_to_base(x, prec=2, base=.25):
+    return round(base * round(float(x)/base), prec)
+
+
 @app.route('/', methods=['GET'])
 def home():
 
@@ -72,8 +76,9 @@ def home():
 @app.route('/api/by_range', methods=['GET'])
 def api_by_range():
 
-    lat = float(request.args['lat'])
-    lon = float(request.args['lon'])
+    # round lat and lon to nearest 0.25
+    lat = round_to_base(float(request.args['lat']), prec=2, base=0.25)
+    lon = round_to_base(float(request.args['lon']), prec=2, base=0.25)
     variable = request.args['variable']
 
     # figure out the region to use
@@ -113,8 +118,8 @@ def api_temperature_day():
 
     print(request.args)
 
-    lat = float(request.args['lat'])
-    lon = float(request.args['lon'])
+    lat = round_to_base(float(request.args['lat']), prec=2, base=0.25)
+    lon = round_to_base(float(request.args['lon']), prec=2, base=0.25)
     mon = int(request.args['month'])
     day = int(request.args['day'])
     variable = request.args['variable']
