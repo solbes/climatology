@@ -15,7 +15,7 @@ configuration file `~/.cdsapirc`:
 
 ``` text
 url: https://cds.climate.copernicus.eu/api/v2
-key: SECRET-KEY-OBTAINED-FROM-
+key: SECRET-KEY-OBTAINED-FROM-WEBSITE
 ```
 
 ### Clone git repository
@@ -28,12 +28,13 @@ git clone git@github.com:solbes/climatology.git
 
 ```bash
 mkdir ~/.climatology/europe
+mkdir ~/.climatology/beijing
 ```
 
 
 ### Create your data loader config file 
 
-For example `~/climatology_config.json`:
+For example `~/.climatology/configs.json`:
 
 ```json
 {
@@ -65,13 +66,13 @@ source ~/miniconda/bin/activate climatology
 
 ### Start data loader
 ```bash
-python load_data.py --configs-file /path/to/climatology_config.json
+python load_data.py --configs-file ~/.climatology/configs.json
 ```
 
 ### Start local historical weather service
 
 ``` bash
-python api.py --configs-file /path/to/climatology_config.json
+python api.py --configs-file ~/.climatology/configs.json
 ```
 
 ### Test query
