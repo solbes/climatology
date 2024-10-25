@@ -4,3 +4,4 @@ static
 *.png
 .idea
 *.nc
+configs.json
