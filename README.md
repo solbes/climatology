@@ -56,12 +56,17 @@ For example `~/.climatology/configs.json`:
 **NOTE** The values of the `area` property define the lat/lon grid where data is
 queried to. The list is of form `[North, West, South, East]` where `West/East` is between -180...180 and `North/South` between -90...90.
 
-### Install virtual environment using Conda
+### Install virtual environment and activate it
 
 ``` bash
-# Use your local conda, e.g. ~/miniconda/bin/conda
-~/miniconda/bin/conda env create --force --name climatology --file environment.yml
-source ~/miniconda/bin/activate climatology
+python -m venv /PATH/TO/VENVS/climatology
+source /PATH/TO/VENVS/bin/activate
+```
+### Install the package ###
+
+``` bash
+cd /PATH/TO/ROOT/FOLDER
+pip install --editable .
 ```
 
 ### Start data loader
