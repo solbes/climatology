@@ -94,7 +94,7 @@ def create_app(configs):
         end = request.args['end'] if 'end' in request.args else pd.Timestamp.now()
 
         temp_series = ds_disk.sel(
-            time=slice(start, end),
+            valid_time=slice(start, end),
             longitude=lon,
             latitude=lat
         )
@@ -143,7 +143,7 @@ def create_app(configs):
         ii_year = (time.year >= start) & (time.year <= end)
 
         temp_series = ds_disk.sel(
-            time=(ii_mon & ii_day & ii_year), longitude=lon, latitude=lat,
+            valid_time=(ii_mon & ii_day & ii_year), longitude=lon, latitude=lat,
         )
 
         # in some files you get a nasty extra dimension 'expver' in addition to

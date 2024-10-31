@@ -20,6 +20,9 @@ setup(
         'pandas',
         'xarray',
         'cdsapi',
+        'netcdf4',
+        'h5netcdf',
+        'dask'
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',

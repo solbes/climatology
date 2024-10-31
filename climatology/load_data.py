@@ -77,7 +77,7 @@ def main(configs: dict) -> None:
             glob_path = os.path.join(path, region, variable + '*')
             if glob.glob(glob_path):
                 ds_disk = xr.open_mfdataset(glob_path)
-                existing_times = pd.to_datetime(ds_disk.time.to_series())
+                existing_times = pd.to_datetime(ds_disk.valid_time.to_series())
                 existing_counts = existing_times.groupby(
                     [t.strftime('%Y-%m') for t in existing_times]
                 ).count().reindex(expected_counts.index).fillna(0)
