@@ -14,7 +14,7 @@ This is needed so that the loader can query data. You need to create a
 configuration file `~/.cdsapirc`:
 
 ``` text
-url: https://cds.climate.copernicus.eu/api/v2
+url: https://cds.climate.copernicus.eu/api
 key: SECRET-KEY-OBTAINED-FROM-WEBSITE
 ```
 

@@ -78,9 +78,8 @@ def create_app(configs):
     @app.route('/api/by_range', methods=['GET'])
     def api_by_range():
 
-        # round lat and lon to nearest 0.25
-        lat = round_to_base(float(request.args['lat']), prec=2, base=0.25)
-        lon = round_to_base(float(request.args['lon']), prec=2, base=0.25)
+        lat = float(request.args['lat'])
+        lon = float(request.args['lon'])
         variable = request.args['variable']
 
         # figure out the region to use
@@ -93,10 +92,17 @@ def create_app(configs):
         start = request.args['start'] if 'start' in request.args else '2020'
         end = request.args['end'] if 'end' in request.args else pd.Timestamp.now()
 
+        # here we add support for location interpolation
+        # * method='nearest': Select the nearest data point
+        # * method='pad': Select the data point with the closest coordinate that is 
+        #                 less than or equal to the target coordinate
+        # * method='backfill': Select the data point with the closest coordinate that is 
+        #                 greater than or equal to the target coordinate
         temp_series = ds_disk.sel(
             valid_time=slice(start, end),
             longitude=lon,
-            latitude=lat
+            latitude=lat,
+            method='nearest'
         )
 
         # in some files you get a nasty extra dimension 'expver' in addition to
@@ -119,8 +125,8 @@ def create_app(configs):
 
         print(request.args)
 
-        lat = round_to_base(float(request.args['lat']), prec=2, base=0.25)
-        lon = round_to_base(float(request.args['lon']), prec=2, base=0.25)
+        lat = float(request.args['lat'])
+        lon = float(request.args['lon'])        
         mon = int(request.args['month'])
         day = int(request.args['day'])
         variable = request.args['variable']
@@ -142,8 +148,12 @@ def create_app(configs):
         ii_day = time.day == day
         ii_year = (time.year >= start) & (time.year <= end)
 
+        # same as line 101, we add support for location interpolation
         temp_series = ds_disk.sel(
-            valid_time=(ii_mon & ii_day & ii_year), longitude=lon, latitude=lat,
+            valid_time=(ii_mon & ii_day & ii_year), 
+            longitude=lon, 
+            latitude=lat,
+            method='nearest'
         )
 
         # in some files you get a nasty extra dimension 'expver' in addition to
