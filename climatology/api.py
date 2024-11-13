@@ -98,11 +98,13 @@ def create_app(configs):
         #                 less than or equal to the target coordinate
         # * method='backfill': Select the data point with the closest coordinate that is 
         #                 greater than or equal to the target coordinate
+        lat = ds_disk.sel(latitude=lat, method='nearest').latitude.values
+        lon = ds_disk.sel(longitude=lon, method='nearest').longitude.values
+
         temp_series = ds_disk.sel(
             valid_time=slice(start, end),
             longitude=lon,
-            latitude=lat,
-            method='nearest'
+            latitude=lat
         )
 
         # in some files you get a nasty extra dimension 'expver' in addition to
@@ -148,12 +150,14 @@ def create_app(configs):
         ii_day = time.day == day
         ii_year = (time.year >= start) & (time.year <= end)
 
-        # same as line 101, we add support for location interpolation
+        # interpolate if the coordinates do not match those in the data files
+        lat = ds_disk.sel(latitude=lat, method='nearest').latitude.values
+        lon = ds_disk.sel(longitude=lon, method='nearest').longitude.values
+
         temp_series = ds_disk.sel(
             valid_time=(ii_mon & ii_day & ii_year), 
             longitude=lon, 
-            latitude=lat,
-            method='nearest'
+            latitude=lat
         )
 
         # in some files you get a nasty extra dimension 'expver' in addition to
