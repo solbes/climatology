@@ -124,8 +124,10 @@ def create_app(configs_file=None):
         # drop lat and lon --> you have a dataframe with just one variable
         temp_series = temp_series.to_dataframe().drop(columns=['latitude', 'longitude'])
 
-        out = {'time': list(temp_series.index.astype(str)),
-            'temperature': list(temp_series.values[:, 0].astype(float))}
+        out = {
+            'time': list(temp_series.index.astype(str)),
+            variable: list(temp_series.values[:, 0].astype(float))
+        }
 
         return jsonify(out)
 
