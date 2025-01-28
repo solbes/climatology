@@ -34,7 +34,14 @@ def round_to_base(x, prec=2, base=.25):
     return round(base * round(float(x)/base), prec)
 
 
-def create_app(configs):
+def create_app(configs_file=None):
+
+    # Initialize configs
+    configs_file = configs_file or os.path.join(
+        os.environ["HOME"], ".climatology", "configs.json"
+    )
+    with open(configs_file) as f:
+        configs = json.load(f)
 
     # open all data files
     ds_disks = {key: {} for key in configs}
@@ -187,14 +194,13 @@ def create_app(configs):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Data loader arguments")
-    parser.add_argument('-c', '--configs-file', help='path to configuration JSON file')
+    parser.add_argument(
+        '-c',
+        '--configs-file',
+        help='path to configuration JSON file',
+    )
     args = parser.parse_args()
-
-    # load configurations
-    with open(args.configs_file) as f:
-        configs = json.load(f)
-
-    app = create_app(configs)
+    app = create_app(configs_file=args.configs_file)
 
     # -- Run server -- #
     app.run()  #########

@@ -42,13 +42,13 @@ For example `~/.climatology/configs.json`:
     "variables": ["2m_temperature", "surface_net_solar_radiation"],
     "area": [73.0, -15.0, 30.0, 45.0],
     "start": 2018,
-    "path": "/home/foobar/.climatology/europe"
+    "path": "/home/foobar/.climatology"
   },
   "beijing": {
     "variables": ["2m_temperature", "surface_net_solar_radiation"],
     "area": [45.0, 120.0, 35.0, 110.0],
     "start": 2018,
-    "path": "/home/foobar/.climatology/beijing"
+    "path": "/home/foobar/.climatology"
   }
 }
 ```
@@ -80,9 +80,18 @@ python load_data.py --configs-file ~/.climatology/configs.json
 python api.py --configs-file ~/.climatology/configs.json
 ```
 
+or, alternatively using the Flask CLI:
+
+``` bash
+flask --app 'api:create_app(configs_file="/home/foo/bar/cfg.json")' --port 5555 --host 127.0.0.2
+```
+
+In the latter case all Flask's arguments can be utilized.
+
 ### Test query
 
 ``` bash
+# NOTE: Make sure your geographical region contains the lat/lon coordinates
 curl http://127.0.0.1:5000/api/by_range?variable=2m_temperature&lat=62.0&lon=22.5&start=2021-01-01
 ```
 
