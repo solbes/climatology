@@ -180,7 +180,7 @@ def create_app(configs_file=None):
             columns=['latitude', 'longitude'])
 
         out = {'time': list(temp_series.index.astype(str)),
-            'temperature': list(temp_series.values[:, 0].astype(float))}
+            variable: list(temp_series.values[:, 0].astype(float))}
 
         return jsonify(out)
 
