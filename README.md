@@ -83,7 +83,7 @@ python api.py --configs-file ~/.climatology/configs.json
 or, alternatively using the Flask CLI:
 
 ``` bash
-flask --app 'api:create_app(configs_file="/home/foo/bar/cfg.json")' --port 5555 --host 127.0.0.2
+flask --app 'api:create_app(configs_file="/home/foo/bar/cfg.json")' run --port 5555 --host 127.0.0.2
 ```
 
 In the latter case all Flask's arguments can be utilized.
